@@ -23,4 +23,6 @@ The tweets will be written to stdout as newline separated JSON objects.
 
 See `twiphon --help` for additional information.
 
-*Warning:* This program fails ungracefully when rate limited (the program is killed and an exception is printed to stderr). If you keep running it after getting rate limited you may find yourself blacklisted. Currently the API only allows a user's 3,200 most recent tweets to be downloaded. This tool uses the [GET statuses/user_timeline](https://dev.twitter.com/rest/reference/get/statuses/user_timeline) endpoint. Rate limiting information here: [https://dev.twitter.com/rest/public/rate-limits](https://dev.twitter.com/rest/public/rate-limits).
+## Rate Limiting
+
+This program fails ungracefully when rate limited (the program is killed and an exception is printed to stderr). If you keep running it after getting rate limited you may find yourself blacklisted. Currently the API only allows a user's 3,200 most recent tweets to be downloaded. This tool uses the [GET statuses/user_timeline](https://dev.twitter.com/rest/reference/get/statuses/user_timeline) endpoint. Rate limiting information here: [https://dev.twitter.com/rest/public/rate-limits](https://dev.twitter.com/rest/public/rate-limits).
