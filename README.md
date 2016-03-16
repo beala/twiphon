@@ -4,7 +4,7 @@ A command line utility for downloading a user's tweets. A tweet siphon.
 
 ## Install
 
-Compiling from source requires [stack](http://docs.haskellstack.org/en/stable/README/).
+This tool is written in Haskell, and compiling from source requires [stack](http://docs.haskellstack.org/en/stable/README/).
 
 ```
 stack setup
