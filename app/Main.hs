@@ -125,7 +125,7 @@ data Config = Config { configConsumerSecret :: String
                      } deriving (Show)
 
 configParserInfo :: ParserInfo Config
-configParserInfo = info (helper <*> configParser) (fullDesc <> progDesc "A utility for downloading a user's tweets.")
+configParserInfo = info (helper <*> configParser) (fullDesc <> progDesc "A utility for downloading a user's tweets. A tweet siphon.")
 
 configParser :: Parser Config
 configParser = Config
