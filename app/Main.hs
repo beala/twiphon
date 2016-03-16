@@ -20,7 +20,7 @@ import           Network.HTTP.Client.TLS    (tlsManagerSettings)
 import           Options.Applicative        (Parser, ParserInfo, auto,
                                              execParser, fullDesc, help, helper,
                                              info, long, option, optional,
-                                             progDesc, strOption)
+                                             progDesc, strOption, value)
 import           Pipes
 import qualified Pipes.Prelude              as P
 import           Safe                       (lastMay)
@@ -35,12 +35,12 @@ main = do
   config <- execParser configParserInfo
   let oauth = twitterOAuth config
   let credential = twitterCredential config
-  let limitPipe = maybe identityPipe P.take (configStatusCount config)
   let maxId = BS8.pack <$> (configMaxId config)
   let screenName = BS8.pack $ configScreenName config
+  let statusCount = configStatusCount config
   manager <- newManager tlsManagerSettings
-  runEffect $ getUserTimeline' screenName maxId oauth credential manager >->
-              limitPipe >->
+  runEffect $ getUserTimeline screenName maxId oauth credential manager >->
+              P.take statusCount >->
               statusToJson >->
               printByteString
 
@@ -65,10 +65,7 @@ userTimelineReq screenName maxId = do
 intToByteString :: Int -> BS.ByteString
 intToByteString = BS8.pack . show
 
-getUserTimeline :: (MonadThrow m, MonadIO m) => BS.ByteString -> OAuth -> Credential -> Manager -> Producer Status m ()
-getUserTimeline screenName oauth credential manager = getUserTimeline' screenName Nothing oauth credential manager
-
-getUserTimeline' ::
+getUserTimeline ::
   (MonadThrow m, MonadIO m) =>
   BS.ByteString ->
   Maybe BS.ByteString ->
@@ -76,7 +73,7 @@ getUserTimeline' ::
   Credential ->
   Manager ->
   Producer Status m ()
-getUserTimeline' screenName maxId oauth credential manager = do
+getUserTimeline screenName maxId oauth credential manager = do
     tlReq       <- lift $ userTimelineReq screenName maxId
     signedTlReq <- liftIO $ signOAuth oauth credential tlReq
     response    <- liftIO $ httpLbs signedTlReq manager
@@ -85,7 +82,7 @@ getUserTimeline' screenName maxId oauth credential manager = do
     case getMaxId statuses of
       Just newMaxId ->
         -- First tweet will be a duplicate of the last tweet in the previous request, so it is dropped.
-        getUserTimeline' screenName (Just newMaxId) oauth credential manager >-> P.drop 1
+        getUserTimeline screenName (Just newMaxId) oauth credential manager >-> P.drop 1
       Nothing -> return ()
 
 -- Return the ID of the last tweet in the list if there is one.
@@ -112,15 +109,12 @@ statusToJson = forever $ await >>= yield . BL.toStrict . encode
 printByteString :: MonadIO m => Consumer BS.ByteString m ()
 printByteString = forever $ await >>= (liftIO . BS8.putStrLn)
 
-identityPipe :: Monad m => Pipe a a m ()
-identityPipe = forever $ await >>= yield
-
 data Config = Config { configConsumerSecret :: String
                      , configConsumerKey    :: String
                      , configToken          :: String
                      , configTokenSecret    :: String
                      , configScreenName     :: String
-                     , configStatusCount    :: Maybe Int
+                     , configStatusCount    :: Int
                      , configMaxId          :: Maybe String
                      } deriving (Show)
 
@@ -134,10 +128,11 @@ configParser = Config
   <*> strOption (long "atoken" <> help "Access token.")
   <*> strOption (long "asecret" <> help "Access token secret.")
   <*> strOption (long "screenname" <> help "Screen name of account to download from.")
-  <*> (optional (option auto
+  <*> option auto
         (long "count"
-        <> help "Number of tweets to download. If omitted, as many tweets as the API allows will be downloaded."
-        )))
+        <> help "Number of tweets to download. If omitted, as many tweets as the API allows (3200) will be downloaded."
+        <> value 3200
+        )
   <*> (optional (strOption
         (long "id"
         <> help "Tweet ID to start with (inclusive). If omitted, download will begin with most recent tweet."
