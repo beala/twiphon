@@ -23,4 +23,4 @@ The tweets will be written to stdout as newline separated JSON objects.
 
 See `twiphon --help` for additional information.
 
-*Warning:* This program fails ungracefully when rate limited (an exception is thrown and the program is killed). Since the API allows around 60,000 tweets to be downloaded every 15 minutes, this is fine for many use cases.
+*Warning:* This program fails ungracefully when rate limited (an exception is thrown and the program is killed). Currently the API allows for 3,200 tweets to be downloaded every 15 minutes.
