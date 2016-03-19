@@ -30,12 +30,16 @@ executable twiphon
                      , http-client
                      , bytestring
                      , exceptions
-                     , twitter-types
                      , aeson
                      , transformers
                      , pipes
                      , safe
                      , optparse-applicative
+                     , attoparsec
+                     , vector
+                     , text
+                     , unordered-containers
+                     , microlens-aeson
                      
   default-language:    Haskell2010
 
