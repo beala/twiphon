@@ -29,7 +29,7 @@ import           Options.Applicative        (Parser, ParserInfo, auto,
                                              switch, value)
 import           Pipes
 import qualified Pipes.Prelude              as P
-import           System.Exit                (ExitCode (..), exitWith)
+import           System.Exit                (ExitCode (..), exitWith, exitSuccess)
 import           System.IO                  (hPutStrLn, stderr)
 import           Web.Authenticate.OAuth     (Credential (..), OAuth, def,
                                              oauthConsumerKey,
@@ -58,6 +58,7 @@ main = do
                  statusToJson >->
                  printByteString
   (runEffect pipeline) `catch` handleExceptions
+  exitSuccess
 
 putStrLnErr :: String -> IO ()
 putStrLnErr = hPutStrLn stderr
