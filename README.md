@@ -60,3 +60,7 @@ Available options:
 ## Rate Limiting
 
 This program quits when rate limited. If you keep running it after getting rate limited you may find yourself blacklisted. Currently the API only allows a user's 3,200 most recent tweets to be downloaded. This tool uses the [GET statuses/user_timeline](https://dev.twitter.com/rest/reference/get/statuses/user_timeline) endpoint. Rate limiting information here: [https://dev.twitter.com/rest/public/rate-limits](https://dev.twitter.com/rest/public/rate-limits).
+
+## Exit Code
+
+If a non-2XX response is received, the program exits with the exit code set to the HTTP response code. So, for example, if the exit code is 429, that means the client was rate limited. An exit code of 1 means there was an internal error (please file a bug report!).

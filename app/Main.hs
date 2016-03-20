@@ -28,7 +28,7 @@ import           Options.Applicative        (Parser, ParserInfo, auto,
                                              progDesc, strOption, switch, value)
 import           Pipes
 import qualified Pipes.Prelude              as P
-import           System.Exit                (exitFailure)
+import           System.Exit                (exitWith, ExitCode(..))
 import           System.IO                  (hPutStrLn, stderr)
 import           Web.Authenticate.OAuth     (Credential (..), OAuth, def,
                                              oauthConsumerKey,
@@ -56,7 +56,7 @@ main = do
                  P.take statusCount >->
                  statusToJson >->
                  printByteString
-  (runEffect pipeline) `catch` (\e -> handleExceptions e >> exitFailure)
+  (runEffect pipeline) `catch` handleExceptions
 
 putStrLnErr :: String -> IO ()
 putStrLnErr = hPutStrLn stderr
@@ -73,10 +73,10 @@ data ParamException = ParamException String deriving Show
 instance Exception ParamException
 
 handleExceptions :: HttpException -> IO ()
-handleExceptions (StatusCodeException (Status 429 _) headers _) =
-  let totalPermits = findHeader "x-rate-limit-limit" headers
-      remainingPermits = findHeader "x-rate-limit-remaining" headers
-      resetTimeStamp = findHeader "x-rate-limit-reset" headers in
+handleExceptions (StatusCodeException (Status 429 _) headers _) = do
+  let totalPermits     = findHeader "x-rate-limit-limit" headers
+  let remainingPermits = findHeader "x-rate-limit-remaining" headers
+  let resetTimeStamp   = findHeader "x-rate-limit-reset" headers
   putStrLnErr
     ( "ERROR: Received 429 Over Rate Limit response."
       <> "\n\tTotal permits: "
@@ -85,8 +85,13 @@ handleExceptions (StatusCodeException (Status 429 _) headers _) =
       <> (show remainingPermits)
       <> "\n\tUnix timestamp (UTC) when permits will be reset: "
       <> (show resetTimeStamp))
-handleExceptions e =
+  exitWith (ExitFailure 429)
+handleExceptions e@(StatusCodeException (Status code _) _ _) = do
   putStrLnErr ("ERROR: Received non-2XX response. Response dump: " <> show e)
+  exitWith (ExitFailure code)
+handleExceptions e = do
+  putStrLnErr ("ERROR: Unexpected exception. Please file a bug report: " <> show e)
+  exitWith (ExitFailure 1)
 
 twitterOAuth :: Config -> OAuth
 twitterOAuth config = def
