@@ -53,8 +53,10 @@ Available options:
   --contrib_details        Include additional contributor info, rather than just
                            the user's ID.
   --exclude_replies        Exclude replies from results.
-  --batch_size ARG         Status to fetch per request. Must be between 2 and
+  --batch_size ARG         Tweets to fetch per request. Must be between 2 and
                            200 inclusive. Defaults to 200.
+
+https://github.com/beala/twiphon
 ```
 
 ## Rate Limiting
