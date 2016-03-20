@@ -86,10 +86,10 @@ handleExceptions (StatusCodeException (Status 429 _) headers _) = do
       <> (show remainingPermits)
       <> "\n\tUnix timestamp (UTC) when permits will be reset: "
       <> (show resetTimeStamp))
-  exitWith (ExitFailure 429)
-handleExceptions e@(StatusCodeException (Status code _) _ _) = do
+  exitWith (ExitFailure 3)
+handleExceptions e@(StatusCodeException (Status _ _) _ _) = do
   putStrLnErr ("ERROR: Received non-2XX response. Response dump: " <> show e)
-  exitWith (ExitFailure code)
+  exitWith (ExitFailure 2)
 handleExceptions e = do
   putStrLnErr ("ERROR: Unexpected exception. Please file a bug report: " <> show e)
   exitWith (ExitFailure 1)

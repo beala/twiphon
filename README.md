@@ -65,4 +65,7 @@ This program quits when rate limited. If you keep running it after getting rate 
 
 ## Exit Code
 
-If a non-2XX response is received, the program exits with the exit code set to the HTTP response code. So, for example, if the exit code is 429, that means the client was rate limited. An exit code of 1 means there was an internal error (please file a bug report!).
+- 0: Success.
+- 1: Unknown error. Please file a bug report!
+- 2: Non-2xx response code.
+- 3: Rate limited.
