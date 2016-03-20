@@ -28,14 +28,16 @@ executable twiphon
                      , authenticate-oauth
                      , http-client-tls
                      , http-client
+                     , http-types
                      , bytestring
                      , exceptions
-                     , twitter-types
                      , aeson
                      , transformers
                      , pipes
-                     , safe
                      , optparse-applicative
+                     , text
+                     , microlens-aeson
+                     , microlens
                      
   default-language:    Haskell2010
 
