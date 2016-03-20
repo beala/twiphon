@@ -23,7 +23,39 @@ Before using the program you must generate a consumer key, a consumer secret, an
 
 The tweets will be written to stdout as newline separated JSON objects.
 
-See `twiphon --help` for additional options.
+Additional options:
+```
+$ twiphon --help
+Usage: twiphon --key ARG --secret ARG --token ARG --token_secret ARG
+               [--screenname ARG] [--userid ARG] [--count ARG] [--max_id ARG]
+               [--trim_user] [--exclude_rts] [--contrib_details]
+               [--exclude_replies] [--batch_size ARG]
+  A utility for downloading a user's tweets. A tweet siphon.
+
+Available options:
+  -h,--help                Show this help text
+  --key ARG                Consumer key.
+  --secret ARG             Consumer secret.
+  --token ARG              Access token.
+  --token_secret ARG       Access token secret.
+  --screenname ARG         Screen name of account to download from. Do not use
+                           in conjunction with userid.
+  --userid ARG             User ID of account to download from. Do not use in
+                           conjunction with screenname.
+  --count ARG              Number of tweets to download. If omitted, as many
+                           tweets as the API allows (3200) will be downloaded.
+  --max_id ARG             Set an upper bound on the tweet ID (inclusive). Don't
+                           fetch tweets newer than this ID. If omitted, download
+                           will begin with most recent tweet.
+  --trim_user              Include only the author's numerical ID. Trim other
+                           details.
+  --exclude_rts            Exclude native retweets from results.
+  --contrib_details        Include additional contributor info, rather than just
+                           the user's ID.
+  --exclude_replies        Exclude replies from results.
+  --batch_size ARG         Status to fetch per request. Must be between 2 and
+                           200 inclusive. Defaults to 200.
+```
 
 ## Rate Limiting
 
