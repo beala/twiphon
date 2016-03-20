@@ -23,12 +23,13 @@ import           Network.HTTP.Client.TLS    (tlsManagerSettings)
 import           Network.HTTP.Types.Header  (Header, HeaderName)
 import           Network.HTTP.Types.Status  (Status (..))
 import           Options.Applicative        (Parser, ParserInfo, auto,
-                                             execParser, fullDesc, help, helper,
-                                             info, long, option, optional,
-                                             progDesc, strOption, switch, value)
+                                             execParser, footer, fullDesc, help,
+                                             helper, info, long, option,
+                                             optional, progDesc, strOption,
+                                             switch, value)
 import           Pipes
 import qualified Pipes.Prelude              as P
-import           System.Exit                (exitWith, ExitCode(..))
+import           System.Exit                (ExitCode (..), exitWith)
 import           System.IO                  (hPutStrLn, stderr)
 import           Web.Authenticate.OAuth     (Credential (..), OAuth, def,
                                              oauthConsumerKey,
@@ -205,7 +206,12 @@ data Config = Config { configConsumerKey    :: String
                      } deriving (Show)
 
 configParserInfo :: ParserInfo Config
-configParserInfo = info (helper <*> configParser) (fullDesc <> progDesc "A utility for downloading a user's tweets. A tweet siphon.")
+configParserInfo =
+  info
+    (helper <*> configParser)
+    (fullDesc
+      <> progDesc "A utility for downloading a user's tweets. A tweet siphon."
+      <> footer "https://github.com/beala/twiphon")
 
 configParser :: Parser Config
 configParser = Config
@@ -231,4 +237,4 @@ configParser = Config
   <*> switch (long "contrib_details" <> help "Include additional contributor info, rather than just the user's ID.")
   <*> switch (long "exclude_replies" <> help "Exclude replies from results.")
   <*> option auto
-        (long "batch_size" <> value 200 <> help "Status to fetch per request. Must be between 2 and 200 inclusive. Defaults to 200.")
+        (long "batch_size" <> value 200 <> help "Tweets to fetch per request. Must be between 2 and 200 inclusive. Defaults to 200.")
